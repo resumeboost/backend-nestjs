@@ -32,5 +32,7 @@ export class UserService {
         HttpStatus.BAD_REQUEST,
       );
     }
+  async getAllUsers(): Promise<User[]> {
+    return await this.userModel.find();
   }
 }
