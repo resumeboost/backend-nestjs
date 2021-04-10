@@ -60,6 +60,7 @@ export class UserService {
       .findByIdAndUpdate(id, { $inc: { points: num_points } })
       .exec();
   }
+
   async uploadResume(userId: string, resumeFile: Express.Multer.File) {
     const filename = uuid() + '.pdf';
     await this.storageService.upload(resumeFile, filename);
@@ -102,5 +103,9 @@ export class UserService {
         ])
         .exec()
     )[0];
+  }
+
+  async getResume(link: string) {
+    return await this.storageService.getFile(link);
   }
 }

@@ -115,5 +115,10 @@ export class UserController {
     return this.userService.putResumeActive(id);
   }
 
+  @Get('/resume/:resumeLink')
+  async getResume(@Param('resumeLink') resumeLink) {
+    return await this.userService.getResume(resumeLink);
+  }
+
   // TODO: Add update user resume method.
 }
