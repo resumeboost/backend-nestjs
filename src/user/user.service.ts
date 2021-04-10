@@ -4,7 +4,8 @@ import { Model } from 'mongoose';
 import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 
-import { User, UserDocument, UserSchema } from '../schemas/user.schema';
+import { User, UserDocument } from '../schemas/user.schema';
+import UpdateUserDto from './dto/updateUser.dto';
 import CreateUserDto from './dto/createUser.dto';
 import UserDto from './dto/user.dto';
 import { v4 as uuid } from 'uuid';
@@ -26,7 +27,7 @@ export class UserService {
   }
 
   async create(userData: CreateUserDto): Promise<User> {
-    const newUser = new this.userModel(userData);
+    const newUser = await this.userModel.create(userData);
     await newUser.save();
     return newUser.toJSON();
   }
@@ -35,6 +36,30 @@ export class UserService {
     return await this.userModel.find().exec();
   }
 
+  async getUser(id: string): Promise<User> {
+    return (await this.userModel.findOne({ _id: id }).exec()).toJSON();
+  }
+
+  async updateUser(id: string, userData: UpdateUserDto): Promise<User> {
+    //console.log('updating user.....');
+    const user = await this.userModel
+      .findOneAndUpdate({ _id: id }, userData)
+      .exec();
+    return user;
+  }
+
+  async putResumeActive(id: string): Promise<string> {
+    const user = await this.userModel.findById(id).exec();
+    user.resumes[0].isActive = true; // TODO: Change it to filter by resume ID
+    user.save();
+    return 'Resume was made active';
+  }
+
+  async updateUserPoints(id: string, num_points: number) {
+    await this.userModel
+      .findByIdAndUpdate(id, { $inc: { points: num_points } })
+      .exec();
+  }
   async uploadResume(userId: string, resumeFile: Express.Multer.File) {
     const filename = uuid() + '.pdf';
     await this.storageService.upload(resumeFile, filename);

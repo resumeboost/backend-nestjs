@@ -6,10 +6,12 @@ import { Express } from 'express';
 import {
   HttpException,
   HttpStatus,
+  Body,
   Controller,
   Get,
   Param,
   Post,
+  Put,
   Request,
   UploadedFile,
   UseGuards,
@@ -19,6 +21,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { UserService } from './user.service';
+import UpdateUserDto from './dto/updateUser.dto';
+import { User } from '../schemas/user.schema';
 
 @Controller('user')
 export class UserController {
@@ -65,7 +69,7 @@ export class UserController {
   }
 
   @Get()
-  async getAllUsers() {
+  async getAllUsers(): Promise<User[]> {
     const returnedUsers = await this.userService.getAllUsers();
     return returnedUsers;
   }
@@ -90,4 +94,24 @@ export class UserController {
       resumeFile,
     };
   }
+
+  @Get(':id')
+  async getUser(@Param('id') id): Promise<User> {
+    return this.userService.getUser(id);
+  }
+
+  @Post('/update/:id')
+  async updateUser(
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ): Promise<User> {
+    return this.userService.updateUser(id, updateUserDto);
+  }
+
+  @Put('/:id/resume')
+  async putResumeActive(@Param('id') id): Promise<string> {
+    return this.userService.putResumeActive(id);
+  }
+
+  // TODO: Add update user resume method.
 }
