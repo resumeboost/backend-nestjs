@@ -1,10 +1,11 @@
-import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 
+import CreateUserDto from './dto/createUser.dto';
+import { StorageService } from './../storage/storage.service';
+import UpdateUserDto from './dto/updateUser.dto';
 import { User } from '../schemas/user.schema';
 import { UserService } from './user.service';
-import UpdateUserDto from './dto/updateUser.dto';
-import CreateUserDto from './dto/createUser.dto';
+import { getModelToken } from '@nestjs/mongoose';
 
 describe('UserService', () => {
   let service: UserService;
@@ -20,6 +21,15 @@ describe('UserService', () => {
     findOneAndUpdate = jest.fn();
     findByIdAndUpdate = jest.fn();
     create = jest.fn();
+
+    const StorageServiceProvider = {
+      provide: StorageService,
+      useFactory: () => ({
+        upload: jest.fn(),
+        getFile: jest.fn(),
+      }),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         UserService,
@@ -33,6 +43,7 @@ describe('UserService', () => {
             create,
           },
         },
+        StorageServiceProvider,
       ],
     }).compile();
 

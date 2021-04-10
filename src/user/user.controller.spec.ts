@@ -1,9 +1,10 @@
-import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 
+import { StorageService } from './../storage/storage.service';
 import { User } from '../schemas/user.schema';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
+import { getModelToken } from '@nestjs/mongoose';
 
 describe('UserController', () => {
   let controller: UserController;
@@ -11,6 +12,14 @@ describe('UserController', () => {
   const findOne = jest.fn();
 
   beforeEach(async () => {
+    const StorageServiceProvider = {
+      provide: StorageService,
+      useFactory: () => ({
+        upload: jest.fn(),
+        getFile: jest.fn(),
+      }),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       controllers: [UserController],
       providers: [
@@ -21,6 +30,7 @@ describe('UserController', () => {
             findOne,
           },
         },
+        StorageServiceProvider,
       ],
     }).compile();
 
