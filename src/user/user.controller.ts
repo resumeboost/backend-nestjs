@@ -98,8 +98,8 @@ export class UserController {
   }
 
   @Get(':id')
-  async getUser(@Param('id') id): Promise<User> {
-    return this.userService.getUser(id);
+  async getById(@Param('id') id): Promise<User> {
+    return this.userService.getById(id);
   }
 
   @Post('/update/:id')
