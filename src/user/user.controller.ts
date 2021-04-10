@@ -68,12 +68,14 @@ export class UserController {
     return await this.userService.uploadResume(req.user._id, resumeFile);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get()
   async getAllUsers(): Promise<User[]> {
     const returnedUsers = await this.userService.getAllUsers();
     return returnedUsers;
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('/review/next')
   async getNextUserToReview() {
     const user = await this.userService.getNextUserToReview();
