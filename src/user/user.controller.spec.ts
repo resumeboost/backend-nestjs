@@ -72,7 +72,7 @@ describe('UserController', () => {
     });
   });
 
-  describe('getUser', () => {
+  describe('getById', () => {
     it('should return a user based on id given', async () => {
       const d = new Date();
       const mockedValue: User = {
@@ -90,12 +90,12 @@ describe('UserController', () => {
         ],
       };
       jest
-        .spyOn(service, 'getUser')
+        .spyOn(service, 'getById')
         .mockImplementation(
           async (): Promise<User> => Promise.resolve(mockedValue),
         );
 
-      const returnedValue = await controller.getUser('1');
+      const returnedValue = await controller.getById('1');
       expect(returnedValue).toBe(mockedValue);
     });
   });

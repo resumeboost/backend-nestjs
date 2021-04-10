@@ -36,10 +36,6 @@ export class UserService {
     return await this.userModel.find().exec();
   }
 
-  async getUser(id: string): Promise<User> {
-    return (await this.userModel.findOne({ _id: id }).exec()).toJSON();
-  }
-
   async updateUser(id: string, userData: UpdateUserDto): Promise<User> {
     //console.log('updating user.....');
     const user = await this.userModel

@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import CreateUserDto from './dto/createUser.dto';
 import { StorageService } from './../storage/storage.service';
 import UpdateUserDto from './dto/updateUser.dto';
-import { User } from '../schemas/user.schema';
+import { User, UserDocument } from '../schemas/user.schema';
 import { UserService } from './user.service';
 import { getModelToken } from '@nestjs/mongoose';
 
@@ -13,14 +13,18 @@ describe('UserService', () => {
   let find: jest.Mock;
   let findOneAndUpdate: jest.Mock;
   let findByIdAndUpdate: jest.Mock;
+  let findById: jest.Mock;
   let create: jest.Mock;
+  let aggregate: jest.Mock;
 
   beforeEach(async () => {
     findOne = jest.fn();
     find = jest.fn();
     findOneAndUpdate = jest.fn();
     findByIdAndUpdate = jest.fn();
+    findById = jest.fn();
     create = jest.fn();
+    aggregate = jest.fn();
 
     const StorageServiceProvider = {
       provide: StorageService,
@@ -40,7 +44,9 @@ describe('UserService', () => {
             find,
             findOneAndUpdate,
             findByIdAndUpdate,
+            findById,
             create,
+            aggregate,
           },
         },
         StorageServiceProvider,
@@ -80,10 +86,10 @@ describe('UserService', () => {
     // });
   });
 
-  describe('getUser', () => {
+  describe('getByID', () => {
     it('should return user with given id', async () => {
       const user = new User();
-      findOne.mockReturnValue({
+      findById.mockReturnValue({
         exec: jest.fn().mockReturnValue(
           Promise.resolve({
             toJSON: jest.fn().mockReturnValue(user),
@@ -91,7 +97,7 @@ describe('UserService', () => {
         ),
       });
 
-      const fetchedUser = await service.getUser('test');
+      const fetchedUser = await service.getById('test');
       expect(fetchedUser).toEqual(user);
     });
   });
@@ -121,6 +127,20 @@ describe('UserService', () => {
 
       const fetchedUser = await service.updateUser(id, updateUserDto);
       expect(fetchedUser).toEqual(user);
+    });
+  });
+
+  describe('getNextReview', () => {
+    it('should get next Review available for reviewing', async () => {
+      const d = new Date();
+      let userDoc: any = [{ _id: '99999' }];
+
+      aggregate.mockReturnValue({
+        exec: jest.fn().mockReturnValue(Promise.resolve(userDoc)),
+      });
+
+      const fetchedUserDoc = await service.getNextUserToReview();
+      expect(fetchedUserDoc).toEqual(userDoc[0]);
     });
   });
 
