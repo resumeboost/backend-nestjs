@@ -20,17 +20,11 @@ export class ReviewService {
   }
 
   async getReviewsByUser(id: string): Promise<Review[]> {
-    const review = await this.reviewModel.find({ revieweeId: id }).exec();
-    return review;
+    return await this.reviewModel.find({ revieweeId: id }).exec();
   }
 
   async postReview(reviewData: PostReviewDto): Promise<string> {
-    const review = await this.reviewModel.create({
-      revieweeId: reviewData.revieweeId,
-      reviewerId: reviewData.reviewerId,
-      resumeId: reviewData.resumeId,
-      info: reviewData.info,
-    });
+    const review = await this.reviewModel.create(reviewData);
 
     this.userService.updateUserPoints(reviewData.revieweeId, -1);
     this.userService.updateUserPoints(reviewData.reviewerId, 1);

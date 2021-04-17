@@ -25,7 +25,7 @@ export class StorageService {
       .then((data) => data.Location);
   }
 
-  async getFile(filename: string): Promise<string> {
+  async getFile(filename: string): Promise<any> {
     const S3params = {
       Bucket: process.env['AWS_BUCKET_NAME'],
       Key: filename,
@@ -34,6 +34,6 @@ export class StorageService {
     return await this.s3
       .getObject(S3params)
       .promise()
-      .then((data) => data.Body.toString());
+      .then((data) => data.Body);
   }
 }

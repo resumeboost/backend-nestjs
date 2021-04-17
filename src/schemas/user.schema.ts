@@ -1,6 +1,6 @@
-import { Document } from 'mongoose';
-
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+
+import { Document } from 'mongoose';
 
 export type UserDocument = User & Document;
 
@@ -12,7 +12,9 @@ export class User {
   @Prop()
   password: string;
 
-  @Prop()
+  @Prop({
+    default: 10,
+  })
   points: number;
 
   @Prop()
@@ -26,6 +28,7 @@ export class User {
     link: string;
     createdAt: Date;
     isActive: boolean;
+    // TODO: Add OriginalName
   }[];
 }
 

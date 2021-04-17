@@ -58,6 +58,7 @@ export class UserService {
   }
 
   async uploadResume(userId: string, resumeFile: Express.Multer.File) {
+    console.log(resumeFile);
     const filename = uuid() + '.pdf';
     await this.storageService.upload(resumeFile, filename);
 
@@ -86,7 +87,7 @@ export class UserService {
       .exec();
   }
 
-  async getNextUserToReview(): Promise<UserDocument> {
+  async getNextUserToReview(userId: string): Promise<UserDocument> {
     return (
       await this.userModel
         .aggregate([
