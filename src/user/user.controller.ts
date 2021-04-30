@@ -85,6 +85,15 @@ export class UserController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Delete('/resume/:id')
+  async deleteResume(
+    @Request() req,
+    @Param('id') resume_id
+  ): Promise<User> {
+    return this.userService.deleteResume(req.user._id, resume_id);
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Get('/review/next')
   async getNextUserToReview(@Request() req) {
     const user = await this.userService.getNextUserToReview(req.user._id);
