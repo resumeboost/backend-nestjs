@@ -77,8 +77,8 @@ export class UserController {
 
   @UseGuards(JwtAuthGuard)
   @Get('/review/next')
-  async getNextUserToReview() {
-    const user = await this.userService.getNextUserToReview();
+  async getNextUserToReview(@Request() req) {
+    const user = await this.userService.getNextUserToReview(req.user._id);
     const userData = _.pick(user, [
       '_id',
       'targetPositions',
@@ -89,11 +89,11 @@ export class UserController {
       (resume) => resume.isActive === true,
     )[0];
 
-    const resumeFile = await this.storageService.getFile(activeResume.link);
+    // const resumeFile = await this.storageService.getFile(activeResume.link);
+    userData['resume'] = activeResume;
 
     return {
       user: userData,
-      resumeFile,
     };
   }
 

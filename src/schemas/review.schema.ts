@@ -1,27 +1,31 @@
-import { Document } from 'mongoose';
-
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+
+import { Document } from 'mongoose';
 
 export type ReviewDocument = Review & Document;
 
 @Schema({ timestamps: true })
 export class Review {
-  @Prop({ unique: true })
+  @Prop()
   revieweeId: string;
 
-  @Prop({ unique: true })
+  @Prop()
   reviewerId: string;
 
-  @Prop({ unique: true })
+  @Prop()
   resumeId: string;
 
   @Prop()
-  info: {
-    visual: number;
-    content: number;
-    relevance: number;
-    feedback: string;
-  }[];
+  visual: number;
+
+  @Prop()
+  content: number;
+
+  @Prop()
+  relevance: number;
+
+  @Prop()
+  feedback: string;
 }
 
 export const ReviewSchema = SchemaFactory.createForClass(Review);

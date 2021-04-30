@@ -11,12 +11,16 @@ export class PostReviewDto {
   resumeId: string;
 
   @ApiProperty()
-  info: {
-    visual: number;
-    content: number;
-    relevance: number;
-    feedback: string;
-  }[];
+  visual: number;
+
+  @ApiProperty()
+  content: number;
+
+  @ApiProperty()
+  relevance: number;
+
+  @ApiProperty()
+  feedback: string;
 }
 
 export default PostReviewDto;
