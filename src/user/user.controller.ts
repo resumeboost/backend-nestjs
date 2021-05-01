@@ -78,18 +78,13 @@ export class UserController {
 
   @UseGuards(JwtAuthGuard)
   @Delete()
-  async deleteUser(
-    @Request() req
-  ): Promise<User> {
+  async deleteUser(@Request() req): Promise<User> {
     return this.userService.delete(req.user._id);
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete('/resume/:id')
-  async deleteResume(
-    @Request() req,
-    @Param('id') resume_id
-  ): Promise<User> {
+  async deleteResume(@Request() req, @Param('id') resume_id): Promise<User> {
     return this.userService.deleteResume(req.user._id, resume_id);
   }
 

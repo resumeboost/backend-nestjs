@@ -27,16 +27,15 @@ export class UserService {
   }
 
   async delete(id: string): Promise<User> {
-    return (await this.userModel.findOneAndDelete({_id: id}).exec()).toJSON();
+    return (await this.userModel.findOneAndDelete({ _id: id }).exec()).toJSON();
   }
 
   async deleteResume(uid: string, resume_id: string): Promise<User> {
-    return await this.userModel.findByIdAndUpdate(
-      uid,
-      {
-        $pull: { resumes: { _id : resume_id }}
-      }
-    );
+    return await this.userModel
+      .findByIdAndUpdate(uid, {
+        $pull: { resumes: { _id: resume_id } },
+      })
+      .exec();
   }
 
   async create(userData: CreateUserDto): Promise<User> {
@@ -76,6 +75,7 @@ export class UserService {
     await this.storageService.upload(resumeFile, filename);
 
     const newResume = {
+      _id: filename,
       link: filename,
       createdAt: new Date(),
       isActive: true,
