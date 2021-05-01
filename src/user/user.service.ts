@@ -26,6 +26,19 @@ export class UserService {
     return (await this.userModel.findOne({ email }).exec()).toJSON();
   }
 
+  async delete(id: string): Promise<User> {
+    return (await this.userModel.findOneAndDelete({_id: id}).exec()).toJSON();
+  }
+
+  async deleteResume(uid: string, resume_id: string): Promise<User> {
+    return await this.userModel.findByIdAndUpdate(
+      uid,
+      {
+        $pull: { resumes: { _id : resume_id }}
+      }
+    );
+  }
+
   async create(userData: CreateUserDto): Promise<User> {
     const newUser = await this.userModel.create(userData);
     await newUser.save();

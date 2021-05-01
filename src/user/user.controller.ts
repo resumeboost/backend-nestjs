@@ -16,6 +16,7 @@ import {
   UploadedFile,
   UseGuards,
   UseInterceptors,
+  Delete,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 
@@ -73,6 +74,23 @@ export class UserController {
   async getAllUsers(): Promise<User[]> {
     const returnedUsers = await this.userService.getAllUsers();
     return returnedUsers;
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete()
+  async deleteUser(
+    @Request() req
+  ): Promise<User> {
+    return this.userService.delete(req.user._id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete('/resume/:id')
+  async deleteResume(
+    @Request() req,
+    @Param('id') resume_id
+  ): Promise<User> {
+    return this.userService.deleteResume(req.user._id, resume_id);
   }
 
   @UseGuards(JwtAuthGuard)
