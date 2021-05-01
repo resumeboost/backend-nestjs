@@ -4,11 +4,14 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { ReviewModule } from './review/review.module';
 import { StorageModule } from './storage/storage.module';
 import { StorageService } from './storage/storage.service';
+import { TestingController } from './testing/testing.controller';
+import { TestingModule } from './testing/testing.module';
 import { UserModule } from './user/user.module';
-import { ReviewModule } from './review/review.module';
 
+// TODO: Set MongoDb link based on ENV
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -20,6 +23,7 @@ import { ReviewModule } from './review/review.module';
     AuthModule,
     ReviewModule,
     StorageModule,
+    TestingModule,
   ],
   controllers: [AppController],
   providers: [AppService],
