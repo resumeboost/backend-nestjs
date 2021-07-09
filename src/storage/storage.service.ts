@@ -1,19 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { S3 } from 'aws-sdk';
+import { InjectS3, S3 } from 'nestjs-s3';
 
 @Injectable()
 export class StorageService {
-  private s3: S3;
-  constructor() {
-    this.s3 = new S3({
-      accessKeyId: process.env['AWS_ID'],
-      secretAccessKey: process.env['AWS_SECRET'],
-    });
-  }
+  constructor(@InjectS3() private readonly s3: S3) {}
 
   async upload(file: Express.Multer.File, filename: string) {
     const S3params = {
-      ACL: 'public-read',
       Bucket: process.env['AWS_BUCKET_NAME'],
       Key: filename,
       Body: file.buffer,

@@ -8,9 +8,6 @@ import { StorageService } from './storage.service';
       config: {
         accessKeyId: process.env['AWS_ID'],
         secretAccessKey: process.env['AWS_SECRET'],
-        endpoint: 'http://127.0.0.1:8080',
-        // s3ForcePathStyle: true,
-        // signatureVersion: 'v4',
       },
     }),
   ],
