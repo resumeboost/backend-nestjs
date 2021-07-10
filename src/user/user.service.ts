@@ -1,5 +1,5 @@
 import { StorageService } from './../storage/storage.service';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 
 import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -10,6 +10,7 @@ import CreateUserDto from './dto/createUser.dto';
 import UserDto from './dto/user.dto';
 import { v4 as uuid } from 'uuid';
 
+const { ObjectId } = Types;
 @Injectable()
 export class UserService {
   private readonly logger = new Logger(UserService.name);
@@ -101,18 +102,88 @@ export class UserService {
   }
 
   async getNextUserToReview(userId: string): Promise<UserDocument> {
-    return (
-      await this.userModel
+    const SAMPLE_SIZE = 5;
+    const MAX_RETRIES = 3;
+
+    let users: UserDocument[];
+    let retries = 0;
+
+    while (retries < MAX_RETRIES && (!users || users.length == 0)) {
+      users = await this.userModel
         .aggregate([
+          // Sample random documents
           {
-            $match: {
-              points: { $gt: 0 },
+            $sample: {
+              size: SAMPLE_SIZE,
             },
           },
-          { $sample: { size: 1 } },
+          // Filter out current user, users with non-positive points and no resumes
+          {
+            $match: {
+              points: {
+                $gt: 0,
+              },
+              resumes: {
+                $exists: true,
+                $ne: [],
+              },
+              _id: {
+                $ne: ObjectId(userId),
+              },
+            },
+          },
+          // Convert objectID to string type for lookup
+          {
+            $addFields: {
+              id: {
+                $toString: '$_id',
+              },
+            },
+          },
+          // Join on reviews table and bring in reviewers for the sampled users
+          {
+            $lookup: {
+              from: 'reviews',
+              let: {
+                id: '$id',
+              },
+              pipeline: [
+                // Join on id = revieweeId
+                {
+                  $match: {
+                    $expr: {
+                      $eq: ['$revieweeId', '$$id'],
+                    },
+                  },
+                },
+                {
+                  $project: {
+                    reviewerId: 1,
+                    _id: 0,
+                  },
+                },
+              ],
+              as: 'reviewedBy',
+            },
+          },
+          // Filter out sampled users that the current user has already reviewed
+          {
+            $match: {
+              'reviewedBy.reviewerId': {
+                $ne: userId,
+              },
+            },
+          },
         ])
-        .exec()
-    )[0];
+        .exec();
+      retries += 1;
+    }
+
+    if (!users || users.length == 0) {
+      throw new Error('Could not find users to review. Please try again later');
+    }
+
+    return users[0];
   }
 
   async getResume(link: string) {
